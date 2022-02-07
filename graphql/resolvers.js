@@ -336,7 +336,7 @@ module.exports = {
       })
 
         .sort({ createdAt: order })
-        .limit(30)
+        .limit(100)
         .skip(offset);
 
       return orders;
