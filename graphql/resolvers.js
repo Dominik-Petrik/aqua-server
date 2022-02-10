@@ -126,30 +126,32 @@ module.exports = {
     ) {
       const doesExist = await Customer.findOne({
         surname,
-        name,
         city,
-        adress,
-        email,
         phone,
-        birthdate,
-        ico,
       });
+
       if (doesExist) {
+        console.log(doesExist._id);
         return doesExist._id;
       }
-      const newCustomer = new Customer({
-        createdAt: now(),
-        surname: surname,
-        name: name,
-        city: city,
-        adress: adress,
-        email: email,
-        phone: phone,
-        birthdate: birthdate,
-        ico: ico,
-      });
-      const res = await newCustomer.save();
-      return res.id;
+      try {
+        const newCustomer = new Customer({
+          createdAt: now(),
+          surname: surname,
+          name: name,
+          city: city,
+          adress: adress,
+          email: email,
+          phone: phone,
+          birthdate: birthdate,
+          ico: ico,
+        });
+        const res = await newCustomer.save();
+        console.log(res);
+        return res.id;
+      } catch (error) {
+        console.log(error);
+      }
     },
     //only for testing
     async populateOrders(_, { number }) {
@@ -328,18 +330,22 @@ module.exports = {
       return order;
     },
     async getOrders(_, { states, order, offset, createdAfter, createdBefore }) {
-      createdAfter = createdAfter ? createdAfter : 0;
-      createdBefore = createdBefore ? createdBefore : 32500911600000;
-      const orders = await Order.find({
-        state: { $in: states },
-        createdAt: { $gte: createdAfter, $lte: createdBefore },
-      })
+      try {
+        createdAfter = createdAfter ? createdAfter : 0;
+        createdBefore = createdBefore ? createdBefore : 32500911600000;
+        const orders = await Order.find({
+          state: { $in: states },
+          createdAt: { $gte: createdAfter, $lte: createdBefore },
+        })
 
-        .sort({ createdAt: order })
-        .limit(100)
-        .skip(offset);
-
-      return orders;
+          .sort({ createdAt: order })
+          .limit(30)
+          .skip(offset);
+        console.log(orders.length);
+        return orders;
+      } catch (error) {
+        console.log(error);
+      }
     },
     async searchOrders(_, { searchTerm }) {
       const agg = [
